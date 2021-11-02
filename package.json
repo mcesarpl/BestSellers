@@ -1,0 +1,34 @@
+{
+  "name": "bestsellers",
+  "version": "1.0.0",
+  "description": "Get the three best sellers itens on Amazon using aws serverless environment",
+  "main": "handler.js",
+  "scripts": {
+    "test": "jest",
+    "lint": "eslint ./src ./test --ext .js",
+    "lint:fix": "eslint ./src ./test --ext .js --fix",
+    "style:check": "prettier --check 'src/**/*.js' 'test/**/*.js'",
+    "style:fix": "prettier --write 'src/**/*.js' 'test/**/*.js'"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mcesarpl/BestSellers.git"
+  },
+  "keywords": [
+    "serverless",
+    "nodejs",
+    "aws",
+    "lambda",
+    "dynamodb"
+  ],
+  "author": "Mateus Landim",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mcesarpl/BestSellers/issues"
+  },
+  "homepage": "https://github.com/mcesarpl/BestSellers#readme",
+  "devDependencies": {
+    "eslint": "^8.1.0",
+    "jest": "^27.3.1"
+  }
+}
