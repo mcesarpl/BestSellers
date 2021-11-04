@@ -7,9 +7,16 @@ frameworkVersion: '2'
 
 provider:
   name: aws
-  runtime: nodejs12.x
+  runtime: nodejs14.x
   lambdaHashingVersion: 20201221
 
 functions:
-  hello:
-    handler: handler.hello
+  scraping:
+    handler: handler.scraping
+    memorySize: 1536
+    layers:
+      - !Sub 'arn:aws:lambda:${AWS::Region}:764866452798:layer:chrome-aws-lambda:22'
+    timeout: 10
+
+
+

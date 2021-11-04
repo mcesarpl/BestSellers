@@ -1,13 +1,9 @@
-module.exports.hello = async (event) => {
-  return {
-    statusCode: 200,
-    body: JSON.stringify(
-      {
-        message: 'Go Serverless v2.0! Your function executed successfully!',
-        input: event,
-      },
-      null,
-      2
-    ),
-  };
-};
+const AmazonScrapping = require('./src/amazonScrap/amazon.scraping');
+
+const handler = new AmazonScrapping({
+  section: 'book',
+  size:'10'
+});
+
+
+module.exports = { scraping: handler.main.bind(handler)};
