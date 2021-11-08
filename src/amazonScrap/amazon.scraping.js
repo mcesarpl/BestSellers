@@ -1,108 +1,40 @@
-
-const chromium = require('chrome-aws-lambda');
-const puppeteer = require('puppeteer-core');
+const { puppeteer } = require('../factories/puppeteerFactory');
+const globalParams = require('../util/globalparams');
 
 class AmazonScrapping {
-    constructor({ section, size }) {
-        this.section = section;
-        this.size = size;
-    }
+  async scrapInfo(params) {
+    const { itemClass } = params;
 
-    async scrapInfo() {
+    const { page, browser } = await puppeteer.init();
 
-        const itemClass = '.zg-item-immersion';
-        const titleClass = 'a-section a-spacing-small';
-        const writerClass = 'a-size-small a-link-child';
-        const ratingClass = 'a-icon-alt';
-        const priceClass = 'p13n-sc-price';
-        const linkAmazonBestSellersBooks = 'https://www.amazon.com/Best-Sellers-Books/zgbs/books/ref=zg_bs_nav_0';
+    await puppeteer.goto({
+      page,
+      link: globalParams.LINKAMAZONBESTSELLERS,
+      awaitSelector: itemClass,
+    });
 
-        const userAgent = 'Mozilla/5.0 (X11; Linux x86_64)' +
-            'AppleWebKit/537.36 (KHTML, like Gecko) Chrome/64.0.3282.39 Safari/537.36';
+    const items = await puppeteer.scrapInfoAmazon({ page, ...params });
 
-        const browser = await puppeteer.launch({
-            args: chromium.args,
-            defaultViewport: chromium.defaultViewport,
-            executablePath: await chromium.executablePath,
-            headless: chromium.headless,
-            ignoreHTTPSErrors: true,
-          });
+    await puppeteer.closePage(browser);
 
-        const page = await browser.newPage();
+    return items;
+  }
 
-        await page.setUserAgent(userAgent);
+  formatItems(items) {
+    const formatedArray = items.map((item) => {
+      let { title, writer, rating, price, ranking } = item;
 
-        await page.goto(linkAmazonBestSellersBooks);
+      title = title?.trim();
+      writer = writer?.trim();
+      rating = rating?.trim();
+      price = price?.trim();
+      ranking = ranking?.trim();
 
-        await page.waitForSelector(itemClass);
+      return { title, writer, rating, price, ranking };
+    });
 
-        const items = await page.evaluate(({itemClass, titleClass, writerClass, ratingClass, priceClass}) => {
-            const items = Array.from(document.querySelectorAll(itemClass));
-            const formatedArray = items.map(item => {
-                const title = item.getElementsByClassName(titleClass)[0].getElementsByTagName('img')[0].alt; 
-                const writer = item.getElementsByClassName(writerClass)[0]?.innerHTML;
-                const rating = item.getElementsByClassName(ratingClass)[0]?.innerHTML;
-                const price = item.getElementsByClassName(priceClass)[0]?.innerHTML;
-                return({title, writer, rating, price});
-            });
-    
-            return formatedArray;
-          }, {itemClass, titleClass, writerClass, ratingClass, priceClass});
-
-        await browser.close();
-
-        return items;
-    }
-
-    formatItems(items) {
-
-        const formatedArray = items.map(item => {
-            let { title, writer, rating, price } = item;
-
-            title = title?.trim();
-            writer = writer?.trim();
-            rating = rating?.trim();
-            price = price?.trim();
-
-            return({title, writer, rating, price});
-        });
-
-        return formatedArray;
-    }
-
-    handlerSuccess(data) {
-        const response = {
-            statusCode: 200,
-            body: JSON.stringify(data)
-        };
-
-        return response;
-    }
-
-    handlerError(data) {
-        const error = {
-            statusCode: data.statusCode || 501,
-            headers: {'Content-Type': 'text/plain'},
-            body: 'Couldn\'t create item!!'
-        };
-
-        return error;
-    }
-
-    async main(event) {
-        try {
-
-            const items = await this.scrapInfo();
-            const formated = this.formatItems(items);
-
-            return this.handlerSuccess(formated);
-
-        } catch (error) {
-            console.log('Error: ', error.stack);
-            return this.handlerError({ statusCode: 500});
-        }
-    }
-
+    return formatedArray;
+  }
 }
 
 module.exports = AmazonScrapping;
