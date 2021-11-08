@@ -5,10 +5,14 @@
   "main": "handler.js",
   "scripts": {
     "test": "jest",
-    "lint": "eslint ./src ./__test__ --ext .js",
-    "lint:fix": "eslint ./src ./__test__ --ext .js --fix",
-    "style:check": "prettier --check 'src/**/*.js' '__test__/**/*.js'",
-    "style:fix": "prettier --write 'src/**/*.js' '__test__/**/*.js'"
+    "lint": "eslint ./src ./tests --ext .js",
+    "lint:fix": "eslint ./src ./tests --ext .js --fix",
+    "style:check": "prettier --check 'src/**/*.js' 'tests/**/*.js'",
+    "style:fix": "prettier --write 'src/**/*.js' 'tests/**/*.js'",
+    "deploy-prod": "export AWS_CLIENT_TIMEOUT=720000 && sls deploy --stage prod",
+    "deploy": "export AWS_CLIENT_TIMEOUT=720000 && sls deploy --stage qa",
+    "scraping-prod":"sls invoke --stage prod -f scraping",
+    "scraping":"sls invoke --stage qa -f scraping"
   },
   "repository": {
     "type": "git",
@@ -28,12 +32,24 @@
   },
   "homepage": "https://github.com/mcesarpl/BestSellers#readme",
   "devDependencies": {
-    "eslint": "^8.1.0",
-    "jest": "^27.3.1",
-    "puppeteer": "^10.4.0"
+    "aws-sdk": "^2.1023.0",
+    "eslint": "^7.3.1",
+    "eslint-config-prettier": "^6.11.0",
+    "eslint-plugin-import": "^2.21.2",
+    "eslint-plugin-jest": "^23.17.1",
+    "eslint-plugin-jsdoc": "^30.0.3",
+    "eslint-plugin-prettier": "^3.1.4",
+    "jest": "^26.1.0",
+    "jsdoc": "^3.6.7",
+    "nodemon": "^2.0.4",
+    "prettier": "^2.0.5",
+    "puppeteer": "^10.4.0",
+    "serverless-offline": "^8.2.0"
   },
   "dependencies": {
     "chrome-aws-lambda": "^10.1.0",
-    "puppeteer-core": "^10.4.0"
+    "env-var": "^7.1.1",
+    "puppeteer-core": "^10.4.0",
+    "uuid": "^8.3.2"
   }
 }
