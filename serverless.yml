@@ -4,19 +4,46 @@ service: BestSellers
 
 frameworkVersion: '2'
 
-
 provider:
   name: aws
   runtime: nodejs14.x
+  region: us-east-1
   lambdaHashingVersion: 20201221
+  stage: ${opt:stage, "qa"}
+  environment: ${file(./config/env.${self:provider.stage}.json)}
+  iamRoleStatements: ${file(./config/serverless/db.iam.role.yaml)}
+
+plugins:
+  - serverless-offline
+
+resources:
+  Resources: ${file(./config/serverless/resources/dynamo.amazon.table.yaml)}
+
+custom:
+  scheduleRate: cron(0 0 * * ? *)
+  enabled: ${self:provider.environment.schedulerEnabled}
+  tableName: ${self:provider.environment.DbTableName}
+  dbWriteCapacityUnits: ${self:provider.environment.DbWriteCapacityUnits}
+  dbReadCapacityUnits: ${self:provider.environment.DbReadCapacityUnits}
 
 functions:
   scraping:
     handler: handler.scraping
-    memorySize: 1536
+    memorySize: 1024
     layers:
       - !Sub 'arn:aws:lambda:${AWS::Region}:764866452798:layer:chrome-aws-lambda:22'
-    timeout: 10
+    timeout: 30
+    events:
+      - schedule:
+          rate: ${self:custom.scheduleRate}
+          name: schedule-scraping-${self:provider.stage}
+          description: scraping each 5 minute
+          enabled: ${self:custom.enabled}
 
-
-
+  getTodayList:
+    handler: handler.listToday
+    events:
+      - http:
+          path: todaylist
+          method: get
+          cors: true
