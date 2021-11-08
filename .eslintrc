@@ -1,14 +1,25 @@
 {
-    "rules": {
-        "semi": ["error", "always"],
-        "quotes": ["warn", "single"]
-    },
-    "env": {
-        "node": true,
-        "es6": true
-      },
-    
-      "parserOptions": {
-        "ecmaVersion": 12
+  "env": {
+    "commonjs": true,
+    "es6": true,
+    "node": true,
+  },
+  "extends": ["prettier", "plugin:jsdoc/recommended"],
+  "plugins": ["prettier"],
+  "parserOptions": {
+    "ecmaVersion": 11
+  },
+  "rules": {
+    "prettier/prettier": [
+      "error",
+      {
+        "endOfLine": "auto"
       }
+    ],
+    "no-underscore-dangle": "off",
+    "class-methods-use-this": "off",
+    "no-unused-vars": ["error", { "argsIgnorePattern": "next" }],
+    "no-param-reassign": "off",
+    "consistent-return": "off"
+  }
 }
