@@ -1,0 +1,7 @@
+- Effect: Allow
+  Action:
+    - dynamodb:Query
+    - dynamodb:Scan
+    - dynamodb:PutItem
+    - dynamodb:BatchWriteItem
+  Resource: 'arn:aws:dynamodb:${self:provider.region}:*:table/${self:custom.tableName}'
