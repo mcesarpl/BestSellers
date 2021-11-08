@@ -1,7 +1,7 @@
 {
   "name": "bestsellers",
   "version": "1.0.0",
-  "description": "Get the three best sellers itens on Amazon using aws serverless environment",
+  "description": "Get the ten best sellers books on Amazon using aws serverless environment",
   "main": "handler.js",
   "scripts": {
     "test": "jest",
